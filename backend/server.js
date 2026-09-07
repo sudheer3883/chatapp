@@ -15,9 +15,11 @@ const { initSocketServer } = require('./socket/socketHandler');
 const app = express();
 const server = http.createServer(app);
 
-// Enable CORS for frontend Vite client
+// Enable CORS for frontend client (supports localhost, tunnels, and production URLs)
 const corsOptions = {
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    callback(null, true);
+  },
   credentials: true,
 };
 
@@ -41,6 +43,23 @@ app.use('/api/chats', chatRoutes);
 // Basic health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Serve frontend static build if available
+const frontendDistPath = path.resolve(__dirname, '../frontend/dist');
+app.use(express.static(frontendDistPath));
+
+// Fallback SPA routing for non-API routes
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/socket.io')) {
+    return next();
+  }
+  const indexPath = path.join(frontendDistPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      res.status(404).send('Frontend not built yet. Please run npm run build in /frontend');
+    }
+  });
 });
 
 // Initialize real-time Socket.io logic

@@ -29,7 +29,8 @@ export const SocketProvider = ({ children }) => {
     }
 
     // Connect to Socket.io server with cookie authentication
-    const newSocket = io("http://localhost:5000", {
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || (window.location.port === '5173' ? 'http://localhost:5000' : window.location.origin);
+    const newSocket = io(backendUrl, {
       withCredentials: true,
       transports: ["websocket", "polling"],
     });
