@@ -1,0 +1,11 @@
+{
+  "name": "chatapp-monorepo",
+  "version": "1.0.0",
+  "description": "Full-Stack Real-Time Communication Platform (WhatsApp / Telegram style)",
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev"
+  },
+  "keywords": ["webrtc", "socketio", "chat", "react", "express", "mongodb", "cloudinary"]
+}
